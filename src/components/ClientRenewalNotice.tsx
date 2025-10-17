@@ -1,12 +1,11 @@
 import React from 'react';
 import { LogIn, Clock, Globe, CreditCard } from 'lucide-react';
-import { useNavigate } from './useNavigate';
 
 export function ClientRenewalNotice() {
-  const navigate = useNavigate();
-
-  const handleProviderLogin = () => {
-    navigate('/portal');
+  const handleProviderLogin = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    console.log('Provider Login clicked - navigating to admin portal');
+    window.location.hash = '/portal';
   };
 
   return (
@@ -19,6 +18,7 @@ export function ClientRenewalNotice() {
             <span className="text-xl font-bold text-gray-800">Website Services</span>
           </div>
           <button
+            type="button"
             onClick={handleProviderLogin}
             className="group flex items-center space-x-2 px-4 py-2 rounded-lg bg-[#d4af37] hover:bg-[#c9a533] transition-all duration-300 shadow-lg hover:shadow-xl"
             title="Provider Login"

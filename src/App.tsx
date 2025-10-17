@@ -9,12 +9,16 @@ function App() {
 
   useEffect(() => {
     const handleHashChange = () => {
-      setCurrentRoute(useCurrentRoute());
+      const newRoute = useCurrentRoute();
+      console.log('Route changed to:', newRoute);
+      setCurrentRoute(newRoute);
     };
 
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
+
+  console.log('Current route:', currentRoute);
 
   if (currentRoute === '/client' || currentRoute === '/') {
     return <ClientRenewalNotice />;
