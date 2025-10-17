@@ -17,7 +17,8 @@ export function LoginPage() {
     const { error: signInError } = await signIn(email, password);
 
     if (signInError) {
-      setError('Invalid credentials. Please try again.');
+      console.error('Login error:', signInError);
+      setError(signInError.message || 'Invalid credentials. Please try again.');
     }
 
     setLoading(false);
