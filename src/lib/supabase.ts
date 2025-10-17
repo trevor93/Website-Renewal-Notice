@@ -13,13 +13,13 @@ export const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey);
 // Database Types
 export interface Client {
   id: string;
+  site_name: string;
   domain_name: string;
-  client_name: string;
-  amount_due: number;
+  email: string;
   payment_status: 'paid' | 'unpaid';
-  last_payment_date: string | null;
-  next_due_date: string;
+  payment_date: string | null;
   site_active: boolean;
+  manual_override: boolean;
   created_at: string;
   updated_at: string;
 }

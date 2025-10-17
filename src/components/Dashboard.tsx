@@ -27,12 +27,8 @@ export function Dashboard() {
       const clients = data as Client[];
       const totalClients = clients.length;
       const activeClients = clients.filter(c => c.site_active).length;
-      const totalRevenue = clients
-        .filter(c => c.payment_status === 'paid')
-        .reduce((sum, c) => sum + Number(c.amount_due), 0);
-      const pendingPayments = clients
-        .filter(c => c.payment_status === 'unpaid')
-        .reduce((sum, c) => sum + Number(c.amount_due), 0);
+      const totalRevenue = clients.filter(c => c.payment_status === 'paid').length;
+      const pendingPayments = clients.filter(c => c.payment_status === 'unpaid').length;
 
       setStats({
         totalClients,
@@ -67,15 +63,15 @@ export function Dashboard() {
       bgColor: 'bg-green-600',
     },
     {
-      title: 'Total Revenue',
-      value: formatCurrency(stats.totalRevenue),
+      title: 'Paid Clients',
+      value: stats.totalRevenue,
       icon: DollarSign,
-      color: 'purple',
-      bgColor: 'bg-purple-600',
+      color: 'yellow',
+      bgColor: 'bg-yellow-600',
     },
     {
-      title: 'Pending Payments',
-      value: formatCurrency(stats.pendingPayments),
+      title: 'Unpaid Clients',
+      value: stats.pendingPayments,
       icon: AlertTriangle,
       color: 'red',
       bgColor: 'bg-red-600',
@@ -117,7 +113,7 @@ export function Dashboard() {
         })}
       </div>
 
-      <div className="bg-gradient-to-r from-blue-900/30 to-purple-900/30 border border-blue-700/50 rounded-xl p-6">
+      <div className="bg-gradient-to-r from-gray-800 to-gray-900 border border-yellow-600/50 rounded-xl p-6">
         <h3 className="text-white font-semibold text-lg mb-2">Quick Actions</h3>
         <p className="text-gray-300 text-sm mb-4">
           Manage your clients, track payments, and control site access from the Clients tab.
