@@ -95,7 +95,7 @@ export function ClientRenewalNotice() {
               title="Provider Login"
             >
               <LogIn className="w-5 h-5 text-white group-hover:scale-110 transition-transform" />
-              <span className="text-white font-medium text-sm">Provider Login</span>
+              <span className="text-white font-medium text-sm">Admin Only</span>
             </button>
           </div>
         </header>
