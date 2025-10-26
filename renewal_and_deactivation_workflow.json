@@ -1,0 +1,316 @@
+{
+  "name": "Daily Renewal Check & Deactivation",
+  "nodes": [
+    {
+      "parameters": {
+        "triggerTimes": {
+          "item": [
+            {
+              "mode": "everyDay",
+              "hour": 9
+            }
+          ]
+        }
+      },
+      "id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+      "name": "Run Daily at 9am",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -200,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "documentId": "YOUR_SPREADSHEET_ID",
+        "sheetName": "YOUR_SHEET_NAME",
+        "options": {}
+      },
+      "id": "b2c3d4e5-f6a7-8901-2345-67890abcdef1",
+      "name": "Read Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        0,
+        200
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YOUR_GOOGLE_CREDENTIALS_ID",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {},
+          "conditions": [
+            {
+              "leftValue": "{{$json.Status}}",
+              "rightValue": "Paid",
+              "operator": {
+                "type": "string",
+                "operation": "notEqual"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "c3d4e5f6-a7b8-9012-3456-7890abcdef12",
+      "name": "IF Unpaid",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        200,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const dueDate = new Date($json['PAYMENT DUE DATE']);\nconst today = new Date();\ndueDate.setHours(0, 0, 0, 0);\ntoday.setHours(0, 0, 0, 0);\nconst diffTime = dueDate.getTime() - today.getTime();\nconst diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));\nreturn { ...$json, diffDays: diffDays };"
+      },
+      "id": "d4e5f6a7-b8c9-0123-4567-890abcdef123",
+      "name": "Calculate Day Difference",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        400,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "routing": {
+          "rules": [
+            {
+              "value1": "{{$json.diffDays}}",
+              "operation": "equal",
+              "value2": "3",
+              "output": 0
+            },
+            {
+              "value1": "{{$json.diffDays}}",
+              "operation": "equal",
+              "value2": "0",
+              "output": 1
+            },
+            {
+              "value1": "{{$json.diffDays}}",
+              "operation": "less",
+              "value2": 0,
+              "output": 2
+            }
+          ],
+          "fallbackOutput": "fallback"
+        }
+      },
+      "id": "e5f6a7b8-c9d0-1234-5678-90abcdef1234",
+      "name": "Switch by Due Date",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 2,
+      "position": [
+        600,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{$json.EMAIL}}",
+        "subject": "Website Renewal Reminder: Due in 3 Days",
+        "message": "Hello {{$json['SITE NAME']}},\n\nThis is a friendly reminder that your website hosting is due for renewal in 3 days.\n\nDue Date: {{$json['PAYMENT DUE DATE']}}\nDomain: {{$json.DOMAIN}}\n\nThank you!",
+        "options": {}
+      },
+      "id": "f6a7b8c9-d0e1-2345-6789-0abcdef12345",
+      "name": "Send 3-Day Reminder",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        800,
+        0
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "YOUR_GMAIL_CREDENTIALS_ID",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{$json.EMAIL}}",
+        "subject": "Website Renewal Due Today",
+        "message": "Hello {{$json['SITE NAME']}},\n\nThis is a reminder that your website hosting renewal is due today.\n\nDue Date: {{$json['PAYMENT DUE DATE']}}\nDomain: {{$json.DOMAIN}}\n\nPlease make the payment to avoid service interruption.\n\nThank you!",
+        "options": {}
+      },
+      "id": "a7b8c9d0-e1f2-3456-7890-bcdef1234567",
+      "name": "Send Due Today Reminder",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        800,
+        200
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "YOUR_GMAIL_CREDENTIALS_ID",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const siteMapping = {\n  'aquablisswaters.com': 'c38d2182-b765-4700-b534-9ea571fad77a',\n  'injaaz.netlify.app': '93c6fceb-023f-42ef-be91-14663c90275e',\n  'jaylocs.netlify.app': '8639c4c4-5025-468e-833d-166a77943c66'\n};\nconst domain = $json.DOMAIN;\nconst siteId = siteMapping[domain];\nreturn { json: { ...($json), siteId: siteId }};"
+      },
+      "id": "b8c9d0e1-f2a3-4567-8901-cdef12345678",
+      "name": "Get Site ID",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        800,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.netlify.com/api/v1/sites/{{$json.siteId}}/unpublish",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "netlifyApi",
+        "options": {}
+      },
+      "id": "c9d0e1f2-a3b4-5678-9012-def123456789",
+      "name": "Deactivate Site",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1000,
+        400
+      ],
+      "credentials": {
+        "netlifyApi": {
+          "id": "YOUR_NETLIFY_CREDENTIALS_ID",
+          "name": "Netlify account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{$json.EMAIL}}",
+        "subject": "Action Required: Your Website Has Been Deactivated",
+        "message": "Hello {{$json['SITE NAME']}},\n\nYour website ({{$json.DOMAIN}}) has been temporarily deactivated due to non-payment.\n\nPlease make the renewal payment to reactivate your service.\n\nThank you!",
+        "options": {}
+      },
+      "id": "d0e1f2a3-b4c5-6789-0123-ef1234567890",
+      "name": "Send Deactivation Notice",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1200,
+        400
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "YOUR_GMAIL_CREDENTIALS_ID",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Run Daily at 9am": {
+      "main": [
+        [
+          {
+            "node": "Read Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "IF Unpaid",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Unpaid": {
+      "main": [
+        [
+          {
+            "node": "Calculate Day Difference",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate Day Difference": {
+      "main": [
+        [
+          {
+            "node": "Switch by Due Date",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch by Due Date": {
+      "main": [
+        [
+          {
+            "node": "Send 3-Day Reminder",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Due Today Reminder",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "Get Site ID",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Get Site ID": {
+      "main": [
+        [
+          {
+            "node": "Deactivate Site",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deactivate Site": {
+      "main": [
+        [
+          {
+            "node": "Send Deactivation Notice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

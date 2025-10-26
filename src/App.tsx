@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ClientRenewalNotice } from './components/ClientRenewalNotice';
 import { ProviderPortal } from './components/ProviderPortal';
+import { PaymentConfirmation } from './components/PaymentConfirmation';
 import { useCurrentRoute } from './components/useNavigate';
 
 function App() {
@@ -36,6 +37,11 @@ function App() {
     // Show Provider Portal for /portal route
     if (currentRoute === '/portal') {
       return <ProviderPortal />;
+    }
+
+    // Show Payment Confirmation page
+    if (currentRoute === '/payment-confirmation') {
+      return <PaymentConfirmation />;
     }
 
     // Show Client Portal for all other routes (/, /client, etc.)

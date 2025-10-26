@@ -1,0 +1,224 @@
+{
+  "name": "Payment Confirmation & Reactivation",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "a1b2c3d4-e5f6-7890-webhook",
+        "options": {}
+      },
+      "id": "a1b2c3d4-e5f6-7890-1234-abcdef123456",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.2,
+      "position": [
+        -200,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "lookup",
+        "documentId": "YOUR_SPREADSHEET_ID",
+        "sheetName": "YOUR_SHEET_NAME",
+        "lookupColumn": "EMAIL",
+        "lookupValue": "{{$json.body.payer_email}}",
+        "options": {}
+      },
+      "id": "b2c3d4e5-f6a7-8901-2345-bcdef1234567",
+      "name": "Lookup Client in Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        0,
+        200
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YOUR_GOOGLE_CREDENTIALS_ID",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {},
+          "conditions": [
+            {
+              "leftValue": "{{$json.rowIndex}}",
+              "operator": {
+                "type": "number",
+                "operation": "isNotEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "c3d4e5f6-a7b8-9012-3456-cdef12345678",
+      "name": "IF Client Found",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        200,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": "YOUR_SPREADSHEET_ID",
+        "sheetName": "YOUR_SHEET_NAME",
+        "rowId": "={{$json.rowIndex}}",
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Status": "Paid",
+            "PAYMENT DUE DATE": "={{ new Date(new Date($json['PAYMENT DUE DATE']).setFullYear(new Date($json['PAYMENT DUE DATE']).getFullYear() + 1)).toLocaleDateString('en-CA') }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "d4e5f6a7-b8c9-0123-4567-def123456789",
+      "name": "Update Sheet to Paid",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        400,
+        200
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YOUR_GOOGLE_CREDENTIALS_ID",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const siteMapping = {\n  'aquablisswaters.com': 'c38d2182-b765-4700-b534-9ea571fad77a',\n  'injaaz.netlify.app': '93c6fceb-023f-42ef-be91-14663c90275e',\n  'jaylocs.netlify.app': '8639c4c4-5025-468e-833d-166a77943c66'\n};\nconst domain = $json.DOMAIN;\nconst siteId = siteMapping[domain];\nreturn { json: { ...($json), siteId: siteId }};"
+      },
+      "id": "e5f6a7b8-c9d0-1234-5678-ef1234567890",
+      "name": "Get Site ID",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        600,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.netlify.com/api/v1/sites/{{$json.siteId}}/builds",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "netlifyApi",
+        "options": {}
+      },
+      "id": "f6a7b8c9-d0e1-2345-6789-f1234567890a",
+      "name": "Reactivate Site",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        800,
+        200
+      ],
+      "credentials": {
+        "netlifyApi": {
+          "id": "YOUR_NETLIFY_CREDENTIALS_ID",
+          "name": "Netlify account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{$json.EMAIL}}",
+        "subject": "Website Renewal Successful!",
+        "message": "Hello {{$json['SITE NAME']}},\n\nThank you for your payment! Your website ({{$json.DOMAIN}}) has been successfully renewed and is now active.\n\nYour next renewal date is: {{ new Date(new Date($json['PAYMENT DUE DATE']).setFullYear(new Date($json['PAYMENT DUE DATE']).getFullYear() + 1)).toLocaleDateString() }}\n\nThank you!",
+        "options": {}
+      },
+      "id": "a7b8c9d0-e1f2-3456-7890-1234567890ab",
+      "name": "Send Activation Success Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1000,
+        200
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "YOUR_GMAIL_CREDENTIALS_ID",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Lookup Client in Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lookup Client in Sheet": {
+      "main": [
+        [
+          {
+            "node": "IF Client Found",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Client Found": {
+      "main": [
+        [
+          {
+            "node": "Update Sheet to Paid",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Sheet to Paid": {
+      "main": [
+        [
+          {
+            "node": "Get Site ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Site ID": {
+      "main": [
+        [
+          {
+            "node": "Reactivate Site",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reactivate Site": {
+      "main": [
+        [
+          {
+            "node": "Send Activation Success Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
