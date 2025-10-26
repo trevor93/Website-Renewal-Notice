@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ClientRenewalNotice } from './components/ClientRenewalNotice';
 import { ProviderPortal } from './components/ProviderPortal';
-import { PaymentConfirmation } from './components/PaymentConfirmation';
+import PaymentConfirmation from './components/PaymentConfirmation';
 import { useCurrentRoute } from './components/useNavigate';
 
 function App() {
