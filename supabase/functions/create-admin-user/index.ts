@@ -26,9 +26,11 @@ Deno.serve(async (req: Request) => {
       }
     );
 
+    const { email, password } = await req.json();
+
     const { data, error } = await supabaseAdmin.auth.admin.createUser({
-      email: 'admin@salminhosting.com',
-      password: 'admin123',
+      email,
+      password,
       email_confirm: true,
     });
 
@@ -58,9 +60,9 @@ Deno.serve(async (req: Request) => {
         },
       }
     );
-  } catch (error) {
+  } catch (error: any) {
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: (error as Error).message }),
       {
         status: 500,
         headers: {

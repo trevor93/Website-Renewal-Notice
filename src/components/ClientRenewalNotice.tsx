@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { LogIn, Clock, Globe, CreditCard } from 'lucide-react';
-import { PayPalScriptProvider, PayPalButtons, OnApproveData, CreateOrderData } from '@paypal/react-paypal-js';
+import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 
 // Define the structure for the payment details to be sent to the webhook
 interface PaymentDetails {
@@ -43,7 +43,7 @@ export function ClientRenewalNotice() {
     window.location.hash = '/portal';
   };
 
-  const createOrder = (data: CreateOrderData, actions: any) => {
+  const createOrder = (_data: any, actions: any) => {
     return actions.order.create({
       purchase_units: [
         {
@@ -57,7 +57,7 @@ export function ClientRenewalNotice() {
     });
   };
 
-  const onApprove = (data: OnApproveData, actions: any) => {
+  const onApprove = (_data: any, actions: any) => {
     return actions.order.capture().then(async (details: any) => {
       console.log('Payment Successful:', details);
 
@@ -79,7 +79,7 @@ export function ClientRenewalNotice() {
   };
 
   return (
-    <PayPalScriptProvider options={{ "client-id": paypalClientId, currency: "USD" }}>
+    <PayPalScriptProvider options={{ clientId: paypalClientId, currency: "USD" }}>
       <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-white">
         {/* Header with Provider Login Icon */}
         <header className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md border-b border-gray-200 z-50">

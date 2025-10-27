@@ -13,19 +13,19 @@ To create the admin user account, follow these steps:
 3. Click **Add User** > **Create new user**
 4. Enter the following details:
    - **Email**: `admin@salminhosting.com`
-   - **Password**: `admin123` (or choose a secure password)
+   - **Password**: `NimlasKe93` (or choose a secure password)
    - **Auto Confirm User**: Check this box
 5. Click **Create User**
 
 ### Option 2: Using SQL (Alternative)
 
-If you prefer, you can create the user directly via SQL, but Option 1 is simpler and recommended.
+If you prefer, you can create the user directly via SQL, but Option 1 is simpler and recommended for security.
 
 ## Login Credentials
 
 Once created, you can login to the portal with:
-- **Email**: admin@salminhosting.com
-- **Password**: admin123 (or the password you set)
+- **Email**: salminabdalla93@gmail.com
+- **Password**: NimlasKe93 (or the password you set)
 
 ## Demo Client Data
 
