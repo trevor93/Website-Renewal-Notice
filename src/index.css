@@ -7,6 +7,7 @@
   input[type="button"],
   input[type="reset"],
   input[type="submit"] {
+    -webkit-appearance: button;
     appearance: button;
   }
 
@@ -18,7 +19,6 @@
   iframe,
   embed,
   object {
-    vertical-align: baseline;
     display: block;
   }
 }

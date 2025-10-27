@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "lib": ["esnext", "dom"],
+    "moduleResolution": "node",
+    "strict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "paths": {
+      "lib/*": ["./lib/*"],
+      "lib": ["./lib/index.ts"]
+    }
+  },
+  "include": ["**/*.ts"],
+  "files": ["global.d.ts"]
+}
