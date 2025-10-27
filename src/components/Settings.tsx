@@ -1,4 +1,3 @@
-import React from 'react';
 import { Webhook, Zap, Database, Mail } from 'lucide-react';
 
 export function Settings() {

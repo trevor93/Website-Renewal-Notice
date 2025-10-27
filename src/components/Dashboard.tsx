@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { DollarSign, Users, AlertTriangle, TrendingUp } from 'lucide-react';
 import { supabase, Client } from '../lib/supabase';
 
@@ -40,12 +40,6 @@ export function Dashboard() {
     setLoading(false);
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount);
-  };
 
   const statCards = [
     {

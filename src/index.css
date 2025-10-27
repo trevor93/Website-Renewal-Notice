@@ -2,6 +2,27 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  button,
+  input[type="button"],
+  input[type="reset"],
+  input[type="submit"] {
+    appearance: button;
+  }
+
+  img,
+  svg,
+  video,
+  canvas,
+  audio,
+  iframe,
+  embed,
+  object {
+    vertical-align: baseline;
+    display: block;
+  }
+}
+
 @layer utilities {
   @keyframes fadeIn {
     from {

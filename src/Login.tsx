@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Lock, Mail } from 'lucide-react';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from './useAuth';
 
 export function Login() {
   const [email, setEmail] = useState('salminabdalla93@gmail.com');

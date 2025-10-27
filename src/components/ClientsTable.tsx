@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AlertCircle, CheckCircle, Mail, Globe, RefreshCw } from 'lucide-react';
 import { supabase, Client } from '../lib/supabase';
 
@@ -6,7 +6,7 @@ interface ClientsTableProps {
   onEmailNotification: (clientName: string, domain: string) => void;
 }
 
-export function ClientsTable({ onEmailNotification }: ClientsTableProps) {
+export function ClientsTable({}: ClientsTableProps) {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
@@ -49,7 +49,7 @@ export function ClientsTable({ onEmailNotification }: ClientsTableProps) {
     setLoading(false);
   };
 
-  const toggleSiteActivation = async (clientId: string, currentStatus: boolean, clientName: string) => {
+  const toggleSiteActivation = async (clientId: string, currentStatus: boolean) => {
     setActionLoading(clientId);
 
     const { error } = await supabase
@@ -178,7 +178,7 @@ export function ClientsTable({ onEmailNotification }: ClientsTableProps) {
               </td>
               <td className="py-4 px-4">
                 <button
-                  onClick={() => toggleSiteActivation(client.id, client.site_active, client.site_name)}
+                  onClick={() => toggleSiteActivation(client.id, client.site_active)}
                   disabled={actionLoading === client.id}
                   className="relative inline-flex items-center h-6 w-11 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:ring-offset-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{

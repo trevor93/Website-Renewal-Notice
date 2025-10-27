@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { X, Mail, CheckCircle } from 'lucide-react';
 
 interface EmailNotificationProps {

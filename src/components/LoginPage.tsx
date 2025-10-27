@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Lock, Mail } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../useAuth';
 
 export function LoginPage() {
   const [email, setEmail] = useState('');

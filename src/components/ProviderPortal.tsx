@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { AuthProvider, useAuth } from '../contexts/AuthContext';
+import { useState } from 'react';
+import { AuthProvider } from '../contexts/AuthContext';
+import { useAuth } from '../useAuth';
 import { LoginPage } from './LoginPage';
 import { Sidebar } from './Sidebar';
 import { Dashboard } from './Dashboard';

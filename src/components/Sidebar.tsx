@@ -1,6 +1,5 @@
-import React from 'react';
 import { LayoutDashboard, Users, Settings, LogOut, Globe } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../useAuth';
 
 interface SidebarProps {
   activeTab: string;
