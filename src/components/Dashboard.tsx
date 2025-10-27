@@ -2,6 +2,14 @@ import { useEffect, useState } from 'react';
 import { DollarSign, Users, AlertTriangle, TrendingUp } from 'lucide-react';
 import { supabase, Client } from '../lib/supabase';
 
+interface StatCard {
+  title: string;
+  value: string | number;
+  icon: any;
+  color: string;
+  bgColor: string;
+}
+
 export function Dashboard() {
   const [stats, setStats] = useState({
     totalClients: 0,
@@ -23,11 +31,19 @@ export function Dashboard() {
 
     if (error) {
       console.error('Error fetching stats:', error);
+      setStats({
+        totalClients: 0,
+        activeClients: 0,
+        totalRevenue: 0,
+        pendingPayments: 0,
+      });
     } else {
       const clients = data as Client[];
       const totalClients = clients.length;
       const activeClients = clients.filter(c => c.site_active).length;
-      const totalRevenue = clients.filter(c => c.payment_status === 'paid').length;
+      const totalRevenue = clients
+        .filter(c => c.payment_status === 'paid')
+        .reduce((sum, c) => sum + (c.monthly_fee || 0), 0);
       const pendingPayments = clients.filter(c => c.payment_status === 'unpaid').length;
 
       setStats({
@@ -41,7 +57,7 @@ export function Dashboard() {
   };
 
 
-  const statCards = [
+  const statCards: StatCard[] = [
     {
       title: 'Total Clients',
       value: stats.totalClients,
@@ -57,8 +73,8 @@ export function Dashboard() {
       bgColor: 'bg-green-600',
     },
     {
-      title: 'Paid Clients',
-      value: stats.totalRevenue,
+      title: 'Monthly Revenue',
+      value: `$${stats.totalRevenue.toFixed(2)}`,
       icon: DollarSign,
       color: 'yellow',
       bgColor: 'bg-yellow-600',
@@ -101,7 +117,9 @@ export function Dashboard() {
                 </div>
               </div>
               <p className="text-gray-400 text-sm mb-1">{stat.title}</p>
-              <p className="text-white text-2xl font-bold">{stat.value}</p>
+              <p className="text-white text-2xl font-bold">
+                {typeof stat.value === 'string' ? stat.value : stat.value}
+              </p>
             </div>
           );
         })}

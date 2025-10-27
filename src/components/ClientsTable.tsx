@@ -104,6 +104,7 @@ export function ClientsTable({}: ClientsTableProps) {
             <th className="text-left py-4 px-4 text-gray-400 font-semibold text-sm">Site Name</th>
             <th className="text-left py-4 px-4 text-gray-400 font-semibold text-sm">Domain</th>
             <th className="text-left py-4 px-4 text-gray-400 font-semibold text-sm">Email</th>
+            <th className="text-left py-4 px-4 text-gray-400 font-semibold text-sm">Monthly Fee</th>
             <th className="text-left py-4 px-4 text-gray-400 font-semibold text-sm">Status</th>
             <th className="text-left py-4 px-4 text-gray-400 font-semibold text-sm">Payment Date</th>
             <th className="text-left py-4 px-4 text-gray-400 font-semibold text-sm">Site Active</th>
@@ -141,6 +142,10 @@ export function ClientsTable({}: ClientsTableProps) {
                   <Mail className="w-4 h-4" />
                   <span className="text-sm">{client.email}</span>
                 </a>
+              </td>
+              <td className="py-4 px-4">
+                <span className="text-green-400 font-semibold">${client.monthly_fee?.toFixed(2) || '0.00'}</span>
+                <span className="text-gray-500 text-xs ml-1">/month</span>
               </td>
               <td className="py-4 px-4">
                 {client.payment_status === 'paid' ? (

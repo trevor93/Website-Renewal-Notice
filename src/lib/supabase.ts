@@ -20,6 +20,7 @@ export interface Client {
   payment_date: string | null;
   site_active: boolean;
   manual_override: boolean;
+  monthly_fee: number;
   created_at: string;
   updated_at: string;
 }
