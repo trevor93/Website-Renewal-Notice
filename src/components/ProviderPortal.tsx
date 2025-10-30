@@ -8,6 +8,7 @@ import { ClientsTable } from './ClientsTable';
 import { Settings } from './Settings';
 import { EmailNotification } from './EmailNotification';
 import { RepositoryManager } from './RepositoryManager';
+import { ClientSiteViewer } from './ClientSiteViewer';
 
 function PortalContent() {
   const { user, loading } = useAuth();
@@ -56,6 +57,7 @@ function PortalContent() {
             </div>
           )}
           {activeTab === 'repositories' && <RepositoryManager />}
+          {activeTab === 'site-viewer' && <ClientSiteViewer />}
           {activeTab === 'settings' && <Settings />}
         </div>
       </main>

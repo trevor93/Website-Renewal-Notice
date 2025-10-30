@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, Settings, LogOut, Globe, FolderGit2 } from 'lucide-react';
+import { LayoutDashboard, Users, Settings, LogOut, Globe, FolderGit2, Monitor } from 'lucide-react';
 import { useAuth } from '../useAuth';
 
 interface SidebarProps {
@@ -13,6 +13,7 @@ export function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'clients', label: 'Clients', icon: Users },
     { id: 'repositories', label: 'Repositories', icon: FolderGit2 },
+    { id: 'site-viewer', label: 'Site Viewer', icon: Monitor },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
