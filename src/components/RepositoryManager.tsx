@@ -289,7 +289,7 @@ export function RepositoryManager() {
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-300 text-sm mb-2">Upload Repository ZIP File *</label>
+          <label className="block text-gray-300 text-sm mb-2">Upload Repository ZIP File * (Max 500 MB)</label>
           <div className="flex items-center space-x-3">
             <label className="flex-1 bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-gray-400 cursor-pointer hover:border-yellow-500 transition-colors">
               <input
