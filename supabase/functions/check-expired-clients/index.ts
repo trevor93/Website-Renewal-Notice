@@ -1,13 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2.57.4";
 
-interface Client {
-  id: string;
-  site_name: string;
-  domain_name: string;
-  payment_date: string;
-  // Add other properties as needed based on your 'clients' table schema
-}
-
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
@@ -58,7 +50,7 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const clientIds = expiredClients.map((c: Client) => c.id);
+    const clientIds = expiredClients.map(c => c.id);
 
     const { error: updateError } = await supabase
       .from("clients")
@@ -78,7 +70,7 @@ Deno.serve(async (req: Request) => {
         message: `Deactivated ${expiredClients.length} expired client(s)`,
         checked: new Date().toISOString(),
         deactivated: expiredClients.length,
-        clients: expiredClients.map((c: Client) => ({
+        clients: expiredClients.map(c => ({
           site_name: c.site_name,
           domain_name: c.domain_name,
           payment_date: c.payment_date
