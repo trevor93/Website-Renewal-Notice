@@ -44,7 +44,7 @@ export function ClientSiteViewer() {
     setUpdating(true);
 
     try {
-      const { error } = await supabase
+      const { error: clientError } = await supabase
         .from('clients')
         .update({
           site_active: newStatus,
@@ -52,7 +52,32 @@ export function ClientSiteViewer() {
         })
         .eq('id', clientId);
 
-      if (error) throw error;
+      if (clientError) throw clientError;
+
+      const { error: repoError } = await supabase
+        .from('client_repositories')
+        .update({
+          status: newStatus ? 'active' : 'inactive'
+        })
+        .eq('client_id', clientId);
+
+      if (repoError) {
+        console.warn('No repositories found or failed to update repository status:', repoError);
+      }
+
+      const { error: logError } = await supabase
+        .from('repository_deployment_logs')
+        .insert({
+          repository_id: null,
+          client_id: clientId,
+          action: newStatus ? 'activate' : 'deactivate',
+          success: true,
+          metadata: { source: 'site_viewer', triggered_by: 'admin' }
+        });
+
+      if (logError) {
+        console.warn('Failed to log deployment action:', logError);
+      }
 
       const updatedClients = clients.map(client =>
         client.id === clientId
@@ -122,7 +147,7 @@ export function ClientSiteViewer() {
             <select
               value={selectedClient?.id || ''}
               onChange={(e) => {
-                const client = clients.find(c => c.id === parseInt(e.target.value));
+                const client = clients.find(c => c.id === e.target.value);
                 if (client) setSelectedClient(client);
               }}
               className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-yellow-500"

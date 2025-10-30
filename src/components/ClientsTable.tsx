@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { AlertCircle, CheckCircle, Mail, Globe, RefreshCw } from 'lucide-react';
+import { AlertCircle, CheckCircle, Mail, Globe, RefreshCw, Plus, X } from 'lucide-react';
 import { supabase, Client } from '../lib/supabase';
 
 interface ClientsTableProps {
@@ -10,6 +10,14 @@ export function ClientsTable({}: ClientsTableProps) {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [addingClient, setAddingClient] = useState(false);
+  const [newClient, setNewClient] = useState({
+    site_name: '',
+    domain_name: '',
+    email: '',
+    monthly_fee: '',
+  });
 
   useEffect(() => {
     fetchClients();
@@ -47,6 +55,46 @@ export function ClientsTable({}: ClientsTableProps) {
       setClients(data || []);
     }
     setLoading(false);
+  };
+
+  const addClient = async () => {
+    if (!newClient.site_name || !newClient.domain_name || !newClient.email) {
+      alert('Please fill in all required fields (Site Name, Domain, Email)');
+      return;
+    }
+
+    setAddingClient(true);
+
+    try {
+      const { error } = await supabase
+        .from('clients')
+        .insert({
+          site_name: newClient.site_name,
+          domain_name: newClient.domain_name,
+          email: newClient.email,
+          monthly_fee: newClient.monthly_fee ? parseFloat(newClient.monthly_fee) : 0,
+          payment_status: 'unpaid',
+          site_active: true,
+          manual_override: false,
+        });
+
+      if (error) throw error;
+
+      setNewClient({
+        site_name: '',
+        domain_name: '',
+        email: '',
+        monthly_fee: '',
+      });
+      setShowAddForm(false);
+      await fetchClients();
+      alert('Client added successfully!');
+    } catch (error) {
+      console.error('Error adding client:', error);
+      alert('Failed to add client. Please try again.');
+    } finally {
+      setAddingClient(false);
+    }
   };
 
   const toggleSiteActivation = async (clientId: string, currentStatus: boolean) => {
@@ -116,17 +164,97 @@ export function ClientsTable({}: ClientsTableProps) {
     );
   }
 
-  if (clients.length === 0) {
-    return (
-      <div className="text-center py-12 text-gray-400">
-        <Globe className="w-16 h-16 mx-auto mb-4 opacity-50" />
-        <p>No clients found. Add your first client to get started.</p>
-      </div>
-    );
-  }
-
   return (
-    <div className="overflow-x-auto">
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-2xl font-bold text-white">Client Management</h2>
+          <p className="text-gray-400 mt-1">Manage your clients and their website status</p>
+        </div>
+        <button
+          onClick={() => setShowAddForm(!showAddForm)}
+          className="flex items-center space-x-2 bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors"
+        >
+          {showAddForm ? <X className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
+          <span>{showAddForm ? 'Cancel' : 'Add Client'}</span>
+        </button>
+      </div>
+
+      {showAddForm && (
+        <div className="bg-gray-800 border border-gray-700 rounded-xl p-6">
+          <h3 className="text-white font-semibold text-lg mb-4">Add New Client</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-gray-300 text-sm mb-2">Site Name *</label>
+              <input
+                type="text"
+                value={newClient.site_name}
+                onChange={(e) => setNewClient({ ...newClient, site_name: e.target.value })}
+                placeholder="e.g., AquaBliss Water"
+                className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-yellow-500"
+              />
+            </div>
+            <div>
+              <label className="block text-gray-300 text-sm mb-2">Domain Name *</label>
+              <input
+                type="text"
+                value={newClient.domain_name}
+                onChange={(e) => setNewClient({ ...newClient, domain_name: e.target.value })}
+                placeholder="e.g., aquablisswaters.com"
+                className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-yellow-500"
+              />
+            </div>
+            <div>
+              <label className="block text-gray-300 text-sm mb-2">Email *</label>
+              <input
+                type="email"
+                value={newClient.email}
+                onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
+                placeholder="e.g., client@example.com"
+                className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-yellow-500"
+              />
+            </div>
+            <div>
+              <label className="block text-gray-300 text-sm mb-2">Monthly Fee ($)</label>
+              <input
+                type="number"
+                step="0.01"
+                value={newClient.monthly_fee}
+                onChange={(e) => setNewClient({ ...newClient, monthly_fee: e.target.value })}
+                placeholder="e.g., 29.99"
+                className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-yellow-500"
+              />
+            </div>
+          </div>
+          <div className="mt-4 flex space-x-3">
+            <button
+              onClick={addClient}
+              disabled={addingClient}
+              className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-gray-700 disabled:cursor-not-allowed text-white font-semibold py-2 rounded-lg transition-colors flex items-center justify-center space-x-2"
+            >
+              {addingClient ? (
+                <>
+                  <RefreshCw className="w-4 h-4 animate-spin" />
+                  <span>Adding...</span>
+                </>
+              ) : (
+                <>
+                  <Plus className="w-4 h-4" />
+                  <span>Add Client</span>
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {clients.length === 0 ? (
+        <div className="text-center py-12 text-gray-400">
+          <Globe className="w-16 h-16 mx-auto mb-4 opacity-50" />
+          <p>No clients found. Add your first client to get started.</p>
+        </div>
+      ) : (
+        <div className="overflow-x-auto bg-gray-800 border border-gray-700 rounded-xl p-6">
       <table className="w-full">
         <thead>
           <tr className="border-b border-gray-700">
@@ -234,6 +362,8 @@ export function ClientsTable({}: ClientsTableProps) {
           ))}
         </tbody>
       </table>
+        </div>
+      )}
     </div>
   );
 }

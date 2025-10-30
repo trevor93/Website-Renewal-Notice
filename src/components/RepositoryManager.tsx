@@ -149,17 +149,48 @@ export function RepositoryManager() {
 
   const toggleRepositoryStatus = async (repoId: string, currentStatus: string) => {
     const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+    const repository = repositories.find(r => r.id === repoId);
 
-    const { error } = await supabase
-      .from('client_repositories')
-      .update({ status: newStatus })
-      .eq('id', repoId);
+    if (!repository) return;
 
-    if (error) {
+    try {
+      const { error: repoError } = await supabase
+        .from('client_repositories')
+        .update({ status: newStatus })
+        .eq('id', repoId);
+
+      if (repoError) throw repoError;
+
+      const { error: clientError } = await supabase
+        .from('clients')
+        .update({
+          site_active: newStatus === 'active',
+          manual_override: true
+        })
+        .eq('id', repository.client_id);
+
+      if (clientError) {
+        console.warn('Failed to update client status:', clientError);
+      }
+
+      const { error: logError } = await supabase
+        .from('repository_deployment_logs')
+        .insert({
+          repository_id: repoId,
+          client_id: repository.client_id,
+          action: newStatus === 'active' ? 'activate' : 'deactivate',
+          success: true,
+          metadata: { source: 'repository_manager', triggered_by: 'admin' }
+        });
+
+      if (logError) {
+        console.warn('Failed to log deployment action:', logError);
+      }
+
+      fetchRepositories();
+    } catch (error) {
       alert('Failed to update repository status');
       console.error(error);
-    } else {
-      fetchRepositories();
     }
   };
 
