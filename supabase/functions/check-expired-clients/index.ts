@@ -1,3 +1,4 @@
+// @ts-ignore: npm: specifier is valid in Deno but not recognized by local TypeScript
 import { createClient } from "npm:@supabase/supabase-js@2.57.4";
 
 interface Client {
