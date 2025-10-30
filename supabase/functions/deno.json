@@ -1,11 +1,14 @@
 {
   "compilerOptions": {
-    "lib": ["deno.ns", "deno.window"]
+    "lib": ["deno.ns", "deno.window"],
+    "paths": {
+      "npm:@supabase/supabase-js": ["https://esm.sh/@supabase/supabase-js@2.57.4"]
+    }
   },
   "imports": {
-    "npm:@supabase/supabase-js": "npm:@supabase/supabase-js@2.57.4"
+    "npm:@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2.57.4"
   },
   "types": {
-    "npm:@supabase/supabase-js": "npm:@supabase/supabase-js@2.57.4"
+    "npm:@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2.57.4"
   }
 }

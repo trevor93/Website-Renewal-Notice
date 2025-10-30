@@ -1,3 +1,7 @@
+declare module "npm:@supabase/supabase-js" {
+  export * from "@supabase/supabase-js";
+}
+
 declare namespace Deno {
   interface Env {
     get(key: string): string | undefined;
