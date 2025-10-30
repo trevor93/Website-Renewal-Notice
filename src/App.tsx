@@ -3,6 +3,15 @@ import { ClientRenewalNotice } from './components/ClientRenewalNotice';
 import { ProviderPortal } from './components/ProviderPortal';
 import PaymentConfirmation from './components/PaymentConfirmation';
 import { useCurrentRoute } from './components/useNavigate';
+import { supabase } from './lib/supabase';
+import { ClientWebsite } from './components/ClientWebsite';
+
+interface ClientStatus {
+  site_active: boolean;
+  monthly_fee: number;
+  site_name: string;
+  domain_name: string;
+}
 
 function App() {
   const [currentRoute, setCurrentRoute] = useState(() => {
@@ -13,6 +22,58 @@ function App() {
       return '/';
     }
   });
+
+  const [clientStatus, setClientStatus] = useState<ClientStatus | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const currentDomain = window.location.hostname;
+
+    const fetchClientStatus = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('clients')
+          .select('site_active, monthly_fee, site_name, domain_name')
+          .eq('domain_name', currentDomain)
+          .maybeSingle();
+
+        if (error) {
+          console.error('Error fetching client status:', error);
+        } else if (data) {
+          setClientStatus(data);
+        }
+      } catch (error) {
+        console.error('Error checking site status:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchClientStatus();
+
+    const channel = supabase
+      .channel('client-status-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'clients',
+          filter: `domain_name=eq.${currentDomain}`
+        },
+        (payload) => {
+          console.log('Client status updated:', payload);
+          if (payload.new) {
+            setClientStatus(payload.new as ClientStatus);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -34,18 +95,32 @@ function App() {
   console.log('Current route:', currentRoute);
 
   try {
-    // Show Provider Portal for /portal route
     if (currentRoute === '/portal') {
       return <ProviderPortal />;
     }
 
-    // Show Payment Confirmation page
     if (currentRoute === '/payment-confirmation') {
       return <PaymentConfirmation />;
     }
 
-    // Show Client Portal for all other routes (/, /client, etc.)
-    return <ClientRenewalNotice />;
+    if (loading) {
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-white flex items-center justify-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#d4af37]"></div>
+        </div>
+      );
+    }
+
+    if (clientStatus && !clientStatus.site_active) {
+      return (
+        <ClientRenewalNotice
+          monthlyFee={clientStatus.monthly_fee}
+          siteName={clientStatus.site_name}
+        />
+      );
+    }
+
+    return <ClientWebsite />;
   } catch (error) {
     console.error('Error rendering app:', error);
     return (
