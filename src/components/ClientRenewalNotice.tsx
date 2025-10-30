@@ -230,7 +230,7 @@ export function ClientRenewalNotice({ monthlyFee, siteName }: ClientRenewalNotic
         <footer className="bg-gray-800 text-white py-6">
           <div className="max-w-4xl mx-auto px-6 text-center">
             <p className="text-gray-300 text-sm">
-              Powered by Salmin Hosting Services
+              Powered by Hosting Services
             </p>
             <p className="text-xs text-gray-400 mt-2">
               Secure payment processing and reliable hosting solutions

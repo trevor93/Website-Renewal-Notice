@@ -86,7 +86,7 @@ export function ClientWebsite() {
       <footer className="bg-gray-800 text-white py-8 mt-16">
         <div className="max-w-7xl mx-auto px-6 text-center">
           <p className="text-gray-300">
-            Powered by Salmin Hosting Services
+            Powered by Hosting Services
           </p>
           <p className="text-sm text-gray-400 mt-2">
             Contact: <a href="mailto:websiterenewalnetlify@gmail.com" className="text-blue-400 hover:text-blue-300">websiterenewalnetlify@gmail.com</a>
