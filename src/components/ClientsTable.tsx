@@ -52,22 +52,51 @@ export function ClientsTable({}: ClientsTableProps) {
   const toggleSiteActivation = async (clientId: string, currentStatus: boolean) => {
     setActionLoading(clientId);
 
-    const { error } = await supabase
-      .from('clients')
-      .update({
-        site_active: !currentStatus,
-        manual_override: true,
-      })
-      .eq('id', clientId);
+    try {
+      const newStatus = !currentStatus;
 
-    if (error) {
+      const { error: clientError } = await supabase
+        .from('clients')
+        .update({
+          site_active: newStatus,
+          manual_override: true,
+        })
+        .eq('id', clientId);
+
+      if (clientError) throw clientError;
+
+      const { error: repoError } = await supabase
+        .from('client_repositories')
+        .update({
+          status: newStatus ? 'active' : 'inactive'
+        })
+        .eq('client_id', clientId);
+
+      if (repoError) {
+        console.warn('No repositories found or failed to update repository status:', repoError);
+      }
+
+      const { error: logError } = await supabase
+        .from('repository_deployment_logs')
+        .insert({
+          repository_id: null,
+          client_id: clientId,
+          action: newStatus ? 'activate' : 'deactivate',
+          success: true,
+          metadata: { source: 'manual_control', triggered_by: 'admin' }
+        });
+
+      if (logError) {
+        console.warn('Failed to log deployment action:', logError);
+      }
+
+      await fetchClients();
+    } catch (error) {
       console.error('Error toggling site activation:', error);
       alert('Failed to update site status. Please try again.');
-    } else {
-      await fetchClients();
+    } finally {
+      setActionLoading(null);
     }
-
-    setActionLoading(null);
   };
 
   const formatDate = (dateString: string | null) => {
