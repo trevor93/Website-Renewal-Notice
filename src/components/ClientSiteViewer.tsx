@@ -237,7 +237,7 @@ export function ClientSiteViewer() {
                 src={getSiteUrl()}
                 className="w-full h-full border-0"
                 title={`${selectedClient.site_name} Website Preview`}
-                sandbox="allow-scripts"
+                sandbox="allow-scripts allow-same-origin"
               />
             </div>
           </div>
