@@ -232,12 +232,16 @@ export function ClientSiteViewer() {
             </div>
 
             <div className="relative" style={{ height: '600px' }}>
+              {/* FIX: Updated iframe sandbox attributes to allow localStorage access */}
+              {/* Added 'allow-same-origin' to permit localStorage access for activation checks */}
+              {/* Added 'referrerPolicy' to control referrer information */}
               <iframe
                 key={getSiteUrl()}
                 src={getSiteUrl()}
                 className="w-full h-full border-0"
                 title={`${selectedClient.site_name} Website Preview`}
                 sandbox="allow-scripts allow-same-origin"
+                referrerPolicy="no-referrer"
               />
             </div>
           </div>
