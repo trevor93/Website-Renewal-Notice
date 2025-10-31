@@ -100,7 +100,7 @@ export function Dashboard() {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold text-white mb-2">Dashboard Overview</h2>
-        <p className="text-gray-400">Welcome back, Salmin. Here's your hosting business summary.</p>
+        <p className="text-gray-400">Welcome back. Here's your hosting business summary.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
