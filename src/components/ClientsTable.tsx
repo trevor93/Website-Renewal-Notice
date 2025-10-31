@@ -17,6 +17,8 @@ export function ClientsTable({}: ClientsTableProps) {
     domain_name: '',
     email: '',
     monthly_fee: '',
+    payment_status: 'unpaid',
+    payment_date: '',
   });
 
   useEffect(() => {
@@ -63,6 +65,11 @@ export function ClientsTable({}: ClientsTableProps) {
       return;
     }
 
+    if (!newClient.payment_date) {
+      alert('Please select a payment date');
+      return;
+    }
+
     setAddingClient(true);
 
     try {
@@ -73,7 +80,8 @@ export function ClientsTable({}: ClientsTableProps) {
           domain_name: newClient.domain_name,
           email: newClient.email,
           monthly_fee: newClient.monthly_fee ? parseFloat(newClient.monthly_fee) : 0,
-          payment_status: 'unpaid',
+          payment_status: newClient.payment_status,
+          payment_date: newClient.payment_date,
           site_active: true,
           manual_override: false,
         });
@@ -85,6 +93,8 @@ export function ClientsTable({}: ClientsTableProps) {
         domain_name: '',
         email: '',
         monthly_fee: '',
+        payment_status: 'unpaid',
+        payment_date: '',
       });
       setShowAddForm(false);
       await fetchClients();
@@ -222,6 +232,26 @@ export function ClientsTable({}: ClientsTableProps) {
                 value={newClient.monthly_fee}
                 onChange={(e) => setNewClient({ ...newClient, monthly_fee: e.target.value })}
                 placeholder="e.g., 29.99"
+                className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-yellow-500"
+              />
+            </div>
+            <div>
+              <label className="block text-gray-300 text-sm mb-2">Status *</label>
+              <select
+                value={newClient.payment_status}
+                onChange={(e) => setNewClient({ ...newClient, payment_status: e.target.value })}
+                className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-yellow-500"
+              >
+                <option value="unpaid">Unpaid</option>
+                <option value="paid">Paid</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-gray-300 text-sm mb-2">Payment Date *</label>
+              <input
+                type="date"
+                value={newClient.payment_date}
+                onChange={(e) => setNewClient({ ...newClient, payment_date: e.target.value })}
                 className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-yellow-500"
               />
             </div>
