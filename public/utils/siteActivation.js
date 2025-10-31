@@ -19,7 +19,7 @@ async function checkSiteActivation(domainName) {
       {
         headers: {
           'apikey': SUPABASE_ANON_KEY,
-          'Accept': 'application/json',
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
         },
       }
     );
