@@ -25,7 +25,7 @@ export function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
             <Globe className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h2 className="text-white font-bold text-lg">Hosting Provider</h2>
+            <h2 className="text-white font-bold text-lg">Salmin Hosting</h2>
             <p className="text-gray-400 text-xs">Admin Portal</p>
           </div>
         </div>
