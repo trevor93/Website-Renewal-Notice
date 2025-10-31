@@ -118,6 +118,7 @@ export function ClientsTable({}: ClientsTableProps) {
         .update({
           site_active: newStatus,
           manual_override: true,
+          payment_status: newStatus ? 'paid' : 'unpaid',
         })
         .eq('id', clientId);
 
@@ -134,19 +135,20 @@ export function ClientsTable({}: ClientsTableProps) {
         console.warn('No repositories found or failed to update repository status:', repoError);
       }
 
-      const { error: logError } = await supabase
-        .from('repository_deployment_logs')
-        .insert({
-          repository_id: null,
-          client_id: clientId,
-          action: newStatus ? 'activate' : 'deactivate',
-          success: true,
-          metadata: { source: 'manual_control', triggered_by: 'admin' }
-        });
-
-      if (logError) {
-        console.warn('Failed to log deployment action:', logError);
-      }
+      // TODO: Add proper repository_id lookup before enabling deployment logging
+      // const { error: logError } = await supabase
+      //   .from('repository_deployment_logs')
+      //   .insert({
+      //     repository_id: null,
+      //     client_id: clientId,
+      //     action: newStatus ? 'activate' : 'deactivate',
+      //     success: true,
+      //     metadata: { source: 'manual_control', triggered_by: 'admin' }
+      //   });
+      //
+      // if (logError) {
+      //   console.warn('Failed to log deployment action:', logError);
+      // }
 
       await fetchClients();
     } catch (error) {
